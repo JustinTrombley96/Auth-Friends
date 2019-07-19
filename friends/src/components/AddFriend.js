@@ -1,23 +1,26 @@
 import React from 'react'
 import {Form, Input, Button} from 'semantic-ui-react'
 import {Formik} from 'formik'
-import axios from 'axios'
+import { axiosWithAuth } from './axiosWithAuth';
 
-const Login = (props) => {
+
+const AddFriend = (props) => {
     return (
         <Formik
         initialValues= {{
-            username: '',
-            password: '',
+            name: '',
+            age: '',
+            email: '',
 
         }}
         onSubmit= {(values, actions) => {
             actions.setSubmitting(true)
-            axios.post('http://localhost:5000/api/login', values)
+            axiosWithAuth().post('http://localhost:5000/api/friends', values)
                 .then(res =>  {
-                    localStorage.setItem('token', res.data.payload)
+                    props.setFriends(res.data)
                 })
                 .then(() => props.history.push('/friends'))
+                .then(() => actions.resetForm())
                 .catch(err => console.log(err))
             }}
         render={props => {
@@ -26,20 +29,32 @@ const Login = (props) => {
         <Form style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}} onSubmit={props.handleSubmit}>
             <Form.Field
             control={Input}
-            label="username"
-            name="username"
-            id="username"
+            label="name"
+            name="name"
+            id="name"
             type="text"
             width="4"
-            onChange={props.handleChange}/>
+            onChange={props.handleChange}
+            value={props.values.name}/>
             <Form.Field
             control={Input}
-            label="password"
-            name="password"
-            id="password"
+            label="age"
+            name="age"
+            id="age"
             type="text"
             onChange={props.handleChange}
             width="4"
+            value={props.values.age}
+            />
+            <Form.Field
+            control={Input}
+            label="email"
+            name="email"
+            id="email"
+            type="text"
+            onChange={props.handleChange}
+            width="4"
+            value={props.values.email}
             />
             <Button type="submit">Submit</Button>
             </Form>
@@ -48,7 +63,5 @@ const Login = (props) => {
         }}
         />
     )
-
 }
-
-export default Login
+export default AddFriend
